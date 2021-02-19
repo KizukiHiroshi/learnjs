@@ -1,6 +1,10 @@
 'user strict';
 var learnjs = {};
-learnjs.problem = [
+learnjs.problems = [
+    {
+        description: "",
+        code: ""
+    },
     {
         description: "What is truth?",
         code: "function problem() { return __; }"
@@ -10,11 +14,36 @@ learnjs.problem = [
         code: "function problem() { return 42 == 6 * __; }"
     },
 ];
-learnjs.problemView = function(problemNumber) {
+learnjs.problemView = function(data) {
+    var problemNumber = parseInt(data, 10);
     var view =$(".templates .problem-view").clone();
+    var problemData = learnjs.problems[problemNumber];
+    var resultFlash = view.find('.result');
+    function checkAnswer() {
+        var answer = view.find('.answer').val();
+        var test = problemData.code.replace('__', answer) + '; problem();';
+        return eval(test);
+    }
+    function checkAnswerClick() {
+        if (checkAnswer()) {
+            resultFlash.text('Correct!');
+        } else {
+            resultFlash.text('Incorrect!');
+        }
+        return false;
+    }
+    view.find('.check-btn').click(checkAnswerClick);
     view.find('.title').text('Problem #' + problemNumber);
+    learnjs.applyObject(problemData, view);
     return view;
 }
+// learnjs.problemView = function(data) {
+//     var problemNumber = parseInt(data, 10);
+//     var view =$(".templates .problem-view").clone();
+//     view.find('.title').text('Problem #' + problemNumber);
+//     learnjs.applyObject(learnjs.problems[problemNumber], view);
+//     return view;
+// }
 learnjs.showView = function(hash) {
     var routes = {
         '#problem': learnjs.problemView
@@ -30,4 +59,9 @@ learnjs.appOnReady = function() {
         learnjs.showView(window.location.hash);
     }
     learnjs.showView(window.location.hash);
+}
+learnjs.applyObject = function(obj, elem) {
+    for (var key in obj) {
+        elem.find('[data-name="' + key + '"]').text(obj[key]);
+    }
 }
